@@ -47,6 +47,7 @@ function App() {
   const [rotate, setRotate] = useState(characters[character].defaultText.r);
   const [curve, setCurve] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [imgObj, setImgObj] = useState(null);
 
   const desaturateColor = useCallback((hex) => {
     // Convert hex to RGB
@@ -104,6 +105,7 @@ function App() {
     setRotate(characters[character].defaultText.r);
     setFontSize(characters[character].defaultText.s);
     setLoaded(false);
+    setImgObj(null);
 
     const img = new Image();
     img.src = "/img/" + characters[character].img;
@@ -112,6 +114,7 @@ function App() {
       const color = fac.getColor(img, { algorithm: "sqrt" });
       setDominantColor(color.hex);
       setBackgroundColor(desaturateColor(color.hex));
+      setImgObj(img);
       setLoaded(true);
     };
   }, [character, desaturateColor]);
@@ -122,9 +125,8 @@ function App() {
     ctx.canvas.width = 296;
     ctx.canvas.height = 256;
 
-    if (loaded && document.fonts.check("12px YurukaStd")) {
-      const img = new Image();
-      img.src = "/img/" + characters[character].img;
+    if (loaded && imgObj && document.fonts.check("12px YurukaStd")) {
+      const img = imgObj;
 
       const hRatio = ctx.canvas.width / img.width;
       const vRatio = ctx.canvas.height / img.height;
@@ -189,7 +191,7 @@ function App() {
         ctx.canvas.height - 10
       );
     }
-  }, [loaded, character, fontSize, position, rotate, characters, text, curve, angle, spaceSize]);
+  }, [loaded, imgObj, character, fontSize, position, rotate, characters, text, curve, angle, spaceSize]);
 
   const b64toBlob = useCallback((b64Data, contentType = "image/png", sliceSize = 512) => {
     const byteCharacters = atob(b64Data);
