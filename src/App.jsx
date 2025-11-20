@@ -287,10 +287,10 @@ function App() {
             , tweaked by{" "}
             <Link
               sx={{ color: dominantColor }}
-              href="https://existentialis.me/@hegel"
+              href="https://erica.moe/@er1kaceae"
               target="_blank"
             >
-              @hegel@existentialis.me
+              @er1kaceae@erica.moe
             </Link>
             .{" "}
             <Button
