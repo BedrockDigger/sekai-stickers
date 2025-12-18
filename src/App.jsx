@@ -20,7 +20,7 @@ import {
   DownloadTwoTone,
   GitHub,
 } from "@mui/icons-material";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { FastAverageColor } from "fast-average-color";
 import characters from "./characters.json";
 import Canvas from "./components/Canvas";
@@ -48,6 +48,7 @@ function App() {
   const [curve, setCurve] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [imgObj, setImgObj] = useState(null);
+  const canvasRef = useRef(null);
 
   const desaturateColor = useCallback((hex) => {
     // Convert hex to RGB
@@ -213,7 +214,8 @@ function App() {
   }, []);
 
   const download = useCallback(async () => {
-    const canvas = document.getElementsByTagName("canvas")[0];
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     const link = document.createElement("a");
     link.download = `${characters[character].name}_prsk.erica.moe.png`;
     link.href = canvas.toDataURL();
@@ -222,7 +224,8 @@ function App() {
   }, [character]);
 
   const copy = useCallback(async () => {
-    const canvas = document.getElementsByTagName("canvas")[0];
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     await navigator.clipboard.write([
       new ClipboardItem({
         "image/png": b64toBlob(canvas.toDataURL().split(",")[1]),
@@ -328,6 +331,7 @@ function App() {
                   }}
                 >
                   <Canvas
+                    ref={canvasRef}
                     draw={draw}
                     style={{
                       border: "1px solid #eeeeee",
