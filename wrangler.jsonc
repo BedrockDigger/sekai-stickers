@@ -1,0 +1,8 @@
+{
+	"name": "sekai-stickers",
+	"compatibility_date": "2026-02-17",
+	"assets": {
+		"directory": "./build",
+		"not_found_handling": "single-page-application"
+	}
+}
