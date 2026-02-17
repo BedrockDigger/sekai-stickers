@@ -192,7 +192,7 @@ function App() {
         ctx.canvas.height - 10
       );
     }
-  }, [loaded, imgObj, fontSize, position, rotate, text, curve, angle, spaceSize]);
+  }, [loaded, imgObj, fontSize, character, position, rotate, text, curve, angle, spaceSize]);
 
   const b64toBlob = useCallback((b64Data, contentType = "image/png", sliceSize = 512) => {
     const byteCharacters = atob(b64Data);
