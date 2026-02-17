@@ -5,14 +5,26 @@ import {
   TextField,
   IconButton,
   Tooltip,
+  useMediaQuery,
 } from "@mui/material";
 import { useState, useMemo, useCallback } from "react";
 import characters from "../characters.json";
 import { PersonSearch } from "@mui/icons-material";
 
+const pickerItemSx = {
+  cursor: "pointer",
+  "&:hover": {
+    opacity: 0.5,
+  },
+  "&:active": {
+    opacity: 0.8,
+  },
+};
+
 export default function Picker({ setCharacter, color }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState("");
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
 
   const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -34,28 +46,19 @@ export default function Picker({ setCharacter, color }) {
     setSearch(e.target.value);
   }, []);
 
-  // Memoize the filtered image list items
-  const memoizedImageListItems = useMemo(() => {
+  const renderedItems = useMemo(() => {
     const s = search.toLowerCase();
-    return characters.map((c, index) => {
+    return characters.reduce((acc, c, index) => {
       if (
         s === c.id ||
         c.name.toLowerCase().includes(s) ||
         c.character.toLowerCase().includes(s)
       ) {
-        return (
+        acc.push(
           <ImageListItem
             key={index}
             onClick={() => handleCharacterSelect(index)}
-            sx={{
-              cursor: "pointer",
-              "&:hover": {
-                opacity: 0.5,
-              },
-              "&:active": {
-                opacity: 0.8,
-              },
-            }}
+            sx={pickerItemSx}
           >
             <img
               src={`/img/${c.img}`}
@@ -66,8 +69,8 @@ export default function Picker({ setCharacter, color }) {
           </ImageListItem>
         );
       }
-      return null;
-    });
+      return acc;
+    }, []);
   }, [search, handleCharacterSelect]);
 
   return (
@@ -110,15 +113,15 @@ export default function Picker({ setCharacter, color }) {
         <div className="image-grid-wrapper">
           <ImageList
             sx={{
-              width: window.innerWidth < 600 ? 300 : 500,
+              width: isSmallScreen ? 300 : 500,
               height: 450,
               overflow: "visible",
             }}
-            cols={window.innerWidth < 600 ? 3 : 4}
+            cols={isSmallScreen ? 3 : 4}
             rowHeight={140}
             className="image-grid"
           >
-            {memoizedImageListItems}
+            {renderedItems}
           </ImageList>
         </div>
       </Popover>

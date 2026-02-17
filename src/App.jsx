@@ -20,15 +20,59 @@ import {
   DownloadTwoTone,
   GitHub,
 } from "@mui/icons-material";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from "react";
 import { FastAverageColor } from "fast-average-color";
 import characters from "./characters.json";
 import Canvas from "./components/Canvas";
 import Picker from "./components/Picker";
-import Info from "./components/Info";
 import ThemeWrapper from "./components/ThemeWrapper";
 
-const { ClipboardItem } = window;
+const Info = lazy(() => import("./components/Info"));
+
+const fac = new FastAverageColor();
+
+function desaturateColor(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  const max = Math.max(r, g, b) / 255;
+  const min = Math.min(r, g, b) / 255;
+  let h, s, l = (max + min) / 2;
+
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    if (max === r / 255) h = (g / 255 - b / 255) / d + (g < b ? 6 : 0);
+    else if (max === g / 255) h = (b / 255 - r / 255) / d + 2;
+    else h = (r / 255 - g / 255) / d + 4;
+    h /= 6;
+  }
+
+  s *= 0.15;
+  l = Math.max(0.12, l * 0.3);
+
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+
+  const r2 = Math.round(hue2rgb(p, q, h + 1 / 3) * 255);
+  const g2 = Math.round(hue2rgb(p, q, h) * 255);
+  const b2 = Math.round(hue2rgb(p, q, h - 1 / 3) * 255);
+
+  return `#${r2.toString(16).padStart(2, '0')}${g2.toString(16).padStart(2, '0')}${b2.toString(16).padStart(2, '0')}`;
+}
 
 function App() {
   const [infoOpen, setInfoOpen] = useState(false);
@@ -50,53 +94,6 @@ function App() {
   const [imgObj, setImgObj] = useState(null);
   const canvasRef = useRef(null);
 
-  const desaturateColor = useCallback((hex) => {
-    // Convert hex to RGB
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-
-    // Convert to HSL
-    const max = Math.max(r, g, b) / 255;
-    const min = Math.min(r, g, b) / 255;
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-      if (max === r / 255) h = (g / 255 - b / 255) / d + (g < b ? 6 : 0);
-      else if (max === g / 255) h = (b / 255 - r / 255) / d + 2;
-      else h = (r / 255 - g / 255) / d + 4;
-      h /= 6;
-    }
-
-    // Modify HSL values
-    s *= 0.15; // Reduce saturation to 15%
-    l = Math.max(0.12, l * 0.3); // Darken and ensure minimum brightness
-
-    // Convert back to RGB
-    const hue2rgb = (p, q, t) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    };
-
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-
-    const r2 = Math.round(hue2rgb(p, q, h + 1 / 3) * 255);
-    const g2 = Math.round(hue2rgb(p, q, h) * 255);
-    const b2 = Math.round(hue2rgb(p, q, h - 1 / 3) * 255);
-
-    return `#${r2.toString(16).padStart(2, '0')}${g2.toString(16).padStart(2, '0')}${b2.toString(16).padStart(2, '0')}`;
-  }, []);
-
   useEffect(() => {
     setText(characters[character].defaultText.text);
     setPosition({
@@ -111,31 +108,33 @@ function App() {
     const img = new Image();
     img.src = "/img/" + characters[character].img;
     img.onload = () => {
-      const fac = new FastAverageColor();
       const color = fac.getColor(img, { algorithm: "sqrt" });
       setDominantColor(color.hex);
       setBackgroundColor(desaturateColor(color.hex));
       setImgObj(img);
       setLoaded(true);
     };
-  }, [character, desaturateColor]);
+  }, [character]);
 
   const angle = useMemo(() => (Math.PI * text.length) / 7, [text]);
 
   const draw = useCallback((ctx) => {
-    ctx.canvas.width = 296;
-    ctx.canvas.height = 256;
+    const w = 296;
+    const h = 256;
+    if (ctx.canvas.width !== w) ctx.canvas.width = w;
+    if (ctx.canvas.height !== h) ctx.canvas.height = h;
+
+    ctx.clearRect(0, 0, w, h);
 
     if (loaded && imgObj && document.fonts.check("12px YurukaStd")) {
       const img = imgObj;
 
-      const hRatio = ctx.canvas.width / img.width;
-      const vRatio = ctx.canvas.height / img.height;
+      const hRatio = w / img.width;
+      const vRatio = h / img.height;
       const ratio = Math.min(hRatio, vRatio);
-      const centerShift_x = (ctx.canvas.width - img.width * ratio) / 2;
-      const centerShift_y = (ctx.canvas.height - img.height * ratio) / 2;
+      const centerShift_x = (w - img.width * ratio) / 2;
+      const centerShift_y = (h - img.height * ratio) / 2;
 
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.drawImage(
         img,
         0,
@@ -180,38 +179,18 @@ function App() {
         ctx.restore();
       }
     } else {
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.fillStyle = "#212121";
-      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.fillRect(0, 0, w, h);
       ctx.font = "20px sans-serif";
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
       ctx.fillText(
         "Pick a character to start ↘️",
-        ctx.canvas.width / 2,
-        ctx.canvas.height - 10
+        w / 2,
+        h - 10
       );
     }
   }, [loaded, imgObj, fontSize, character, position, rotate, text, curve, angle, spaceSize]);
-
-  const b64toBlob = useCallback((b64Data, contentType = "image/png", sliceSize = 512) => {
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-      const byteNumbers = new Array(slice.length);
-
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    return new Blob(byteArrays, { type: contentType });
-  }, []);
 
   const download = useCallback(async () => {
     const canvas = canvasRef.current;
@@ -227,12 +206,12 @@ function App() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     await navigator.clipboard.write([
-      new ClipboardItem({
-        "image/png": b64toBlob(canvas.toDataURL().split(",")[1]),
+      new window.ClipboardItem({
+        "image/png": new Promise((resolve) => canvas.toBlob(resolve, "image/png")),
       }),
     ]);
     setCopyPopupOpen(true);
-  }, [b64toBlob]);
+  }, []);
 
   const handleInfoOpen = useCallback(() => setInfoOpen(true), []);
   const handleInfoClose = useCallback(() => setInfoOpen(false), []);
@@ -623,7 +602,9 @@ function App() {
           message="Downlading image..."
         />
       </Grid>
-      <Info open={infoOpen} handleClose={handleInfoClose} />
+      <Suspense fallback={null}>
+        <Info open={infoOpen} handleClose={handleInfoClose} />
+      </Suspense>
     </ThemeWrapper>
   );
 }

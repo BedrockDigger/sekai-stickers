@@ -1,7 +1,7 @@
-import { forwardRef, useRef, useEffect, useImperativeHandle } from "react";
+import { forwardRef, useRef, useEffect, useImperativeHandle, memo } from "react";
 import "../index.css";
 
-const Canvas = forwardRef(({ draw, ...rest }, ref) => {
+const Canvas = memo(forwardRef(({ draw, ...rest }, ref) => {
   const canvasRef = useRef(null);
 
   useImperativeHandle(ref, () => canvasRef.current);
@@ -15,6 +15,6 @@ const Canvas = forwardRef(({ draw, ...rest }, ref) => {
   }, [draw]);
 
   return <canvas ref={canvasRef} {...rest} />;
-});
+}));
 
 export default Canvas;
