@@ -114,6 +114,7 @@ export default function Picker({ setCharacter, color }) {
           <ImageList
             sx={{
               width: isSmallScreen ? 300 : 500,
+              maxWidth: "calc(100vw - 32px)",
               height: 450,
               overflow: "visible",
             }}

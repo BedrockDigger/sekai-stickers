@@ -247,13 +247,16 @@ function App() {
         disableEqualOverflow
         direction="column"
         justifyContent="space-evenly"
-        sx={{ minHeight: "100vh", width: "100vw" }}
+        sx={{ minHeight: "100vh", width: "100%", px: { xs: 1.5, sm: 3 } }}
       >
         <Grid justifyContent="center">
           <Typography
             variant="h3"
             align="center"
-            sx={{ fontFamily: "YurukaStd" }}
+            sx={{
+              fontFamily: "YurukaStd",
+              fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3rem" },
+            }}
           >
             Project Sekai Stickers Maker
           </Typography>
@@ -274,7 +277,9 @@ function App() {
             >
               @er1kaceae@erica.moe
             </Link>
-            .{" "}
+            .
+          </Typography>
+          <Typography align="center" sx={{ mt: 0.5 }}>
             <Button
               variant="outlined"
               startIcon={<GitHub />}
@@ -282,10 +287,8 @@ function App() {
               target="_blank"
               sx={{
                 color: dominantColor,
-                verticalAlign: "middle",
-                marginLeft: "4px",
                 padding: "2px 8px",
-                height: "24px"
+                height: "24px",
               }}
               size="small"
             >
@@ -293,12 +296,13 @@ function App() {
             </Button>
           </Typography>
         </Grid>
-        <Grid container sx={12} justifyContent="space-evenly">
-          <Grid container direction="column" xs={12} sm={7} md={4}>
+        <Grid container xs={12} justifyContent="space-evenly">
+          <Grid container direction="column" xs={12} sm={7} md={5}>
             <Grid container>
               <Grid
                 container
-                xs={10}
+                xs={9}
+                sm={10}
                 justifyContent="space-evenly"
                 alignItems="space-evenly"
               >
@@ -324,7 +328,8 @@ function App() {
                 justifyContent="start"
                 alignItems="center"
                 direction="column"
-                xs={2}
+                xs={3}
+                sm={2}
               >
                 <Grid
                   sx={{
@@ -426,9 +431,9 @@ function App() {
           </Grid>
           <Grid
             sm={0}
-            md={0.5}
+            md={1}
             sx={{
-              display: "flex",
+              display: { xs: "none", md: "flex" },
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -455,7 +460,7 @@ function App() {
               <Typography
                 variant="h6"
                 fontFamily="YurukaStd"
-                sx={{ flexBasis: "60%" }}
+                sx={{ flexShrink: 0, mr: 2, whiteSpace: "nowrap" }}
               >
                 Rotation
               </Typography>
@@ -481,7 +486,7 @@ function App() {
               <Typography
                 variant="h6"
                 fontFamily="YurukaStd"
-                sx={{ flexBasis: "60%" }}
+                sx={{ flexShrink: 0, mr: 2, whiteSpace: "nowrap" }}
               >
                 Font size
               </Typography>
@@ -507,7 +512,7 @@ function App() {
               <Typography
                 variant="h6"
                 fontFamily="YurukaStd"
-                sx={{ flexBasis: "60%" }}
+                sx={{ flexShrink: 0, mr: 2, whiteSpace: "nowrap" }}
               >
                 Spacing
               </Typography>
@@ -533,7 +538,7 @@ function App() {
               <Typography
                 variant="h6"
                 fontFamily="YurukaStd"
-                sx={{ flexBasis: "60%" }}
+                sx={{ flexShrink: 0, mr: 2, whiteSpace: "nowrap" }}
               >
                 Curved text?
               </Typography>
@@ -543,8 +548,7 @@ function App() {
                 sx={{ color: dominantColor }}
               />
             </Grid>
-            <Grid item xs={10}>
-              <div style={{ height: "0.5rem" }} />
+            <Grid item xs={10} sx={{ pt: 1 }}>
               <TextField
                 label="(multiline) text"
                 size="small"
@@ -557,7 +561,6 @@ function App() {
             </Grid>
           </Grid>
         </Grid>
-        <div style={{ height: "10px" }} />
         <Grid
           xs={12}
           item
@@ -565,6 +568,7 @@ function App() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            mt: { xs: 1, sm: 1.5 },
           }}
         >
           <ButtonGroup size="large">
@@ -588,7 +592,6 @@ function App() {
             </Button>
           </ButtonGroup>
         </Grid>
-        <div style={{ height: "10px" }} />
         <Snackbar
           open={copyPopupOpen}
           autoHideDuration={2000}
