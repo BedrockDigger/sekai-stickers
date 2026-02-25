@@ -272,7 +272,6 @@ function App() {
             , tweaked by{" "}
             <Link
               sx={{ color: dominantColor }}
-              rel="me"
               href="https://erica.moe/@er1kaceae"
               target="_blank"
             >
