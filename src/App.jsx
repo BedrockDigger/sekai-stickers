@@ -176,8 +176,8 @@ function App() {
           ctx.fillText(lines[i], 0, k);
           k += spaceSize;
         }
-        ctx.restore();
       }
+      ctx.restore();
     } else {
       ctx.fillStyle = "#212121";
       ctx.fillRect(0, 0, w, h);
