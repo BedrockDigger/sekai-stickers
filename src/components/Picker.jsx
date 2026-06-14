@@ -6,6 +6,7 @@ import {
   IconButton,
   Tooltip,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useState, useMemo, useCallback } from "react";
 import characters from "../characters.json";
@@ -24,7 +25,8 @@ const pickerItemSx = {
 export default function Picker({ setCharacter, color }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState("");
-  const isSmallScreen = useMediaQuery("(max-width:600px)");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClick = useCallback((event) => {
     setAnchorEl(event.currentTarget);
@@ -101,6 +103,8 @@ export default function Picker({ setCharacter, color }) {
       >
         <div className="picker-search">
           <TextField
+            id="picker-search-input"
+            name="search"
             label="Search character"
             size="small"
             color="secondary"
@@ -113,12 +117,12 @@ export default function Picker({ setCharacter, color }) {
         <div className="image-grid-wrapper">
           <ImageList
             sx={{
-              width: isSmallScreen ? 300 : 500,
+              width: { xs: 300, sm: 500 },
               maxWidth: "calc(100vw - 32px)",
               height: 450,
               overflow: "visible",
             }}
-            cols={isSmallScreen ? 3 : 4}
+            cols={isMobile ? 3 : 4}
             rowHeight={140}
             className="image-grid"
           >

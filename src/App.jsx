@@ -10,6 +10,7 @@ import {
   Snackbar,
   Tooltip,
   Divider,
+  Box,
 } from "@mui/material";
 import {
   KeyboardArrowLeft,
@@ -298,15 +299,17 @@ function App() {
         </Grid>
         <Grid container xs={12} justifyContent="space-evenly">
           <Grid container direction="column" xs={12} sm={7} md={5}>
-            <Grid container>
-              <Grid
-                container
-                xs={9}
-                sm={10}
-                justifyContent="space-evenly"
-                alignItems="space-evenly"
-              >
-                <Grid
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "fit-content",
+                margin: "0 auto",
+              }}
+            >
+              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "stretch" }}>
+                <Box
                   sx={{
                     display: "flex",
                     justifyContent: "center",
@@ -321,33 +324,17 @@ function App() {
                       borderRadius: "10px",
                     }}
                   />
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                justifyContent="start"
-                alignItems="center"
-                direction="column"
-                xs={3}
-                sm={2}
-              >
-                <Grid
+                </Box>
+                <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "center",
+                    flexDirection: "column",
                     alignItems: "center",
+                    ml: 1,
+                    py: 1,
                   }}
                 >
                   <KeyboardArrowUp />
-                </Grid>
-                <Grid
-                  sx={{
-                    height: "80%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
                   <Tooltip title="move text vertically" placement="right">
                     <Slider
                       value={
@@ -361,40 +348,25 @@ function App() {
                       step={1}
                       orientation="vertical"
                       track={false}
-                      sx={{ color: dominantColor }}
+                      sx={{ color: dominantColor, flexGrow: 1, my: 1 }}
                       size="small"
                     />
                   </Tooltip>
-                </Grid>
-                <Grid
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
                   <KeyboardArrowDown />
-                </Grid>
-              </Grid>
-              <Grid
-                xs={1}
+                </Box>
+              </Box>
+              <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "center",
+                  flexDirection: "row",
                   alignItems: "center",
+                  width: "296px",
+                  mt: 1,
+                  alignSelf: "flex-start",
                 }}
               >
                 <KeyboardArrowLeft />
-              </Grid>
-              <Grid
-                xs={8}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Tooltip title="move text horizontally">
+                <Tooltip title="move text horizontally" sx={{ flexGrow: 1, mx: 1 }}>
                   <Slider
                     value={position.x}
                     onChange={handleHorizontalPositionChange}
@@ -402,36 +374,19 @@ function App() {
                     max={296}
                     step={1}
                     track={false}
-                    sx={{ color: dominantColor }}
+                    sx={{ color: dominantColor, flexGrow: 1, mx: 1 }}
                     size="small"
                   />
                 </Tooltip>
-              </Grid>
-              <Grid
-                xs={1}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
                 <KeyboardArrowRight />
-              </Grid>
-              <Grid
-                xs={2}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Picker setCharacter={setCharacter} color={dominantColor} />
-              </Grid>
-            </Grid>
+                <Box sx={{ ml: 1 }}>
+                  <Picker setCharacter={setCharacter} color={dominantColor} />
+                </Box>
+              </Box>
+            </Box>
           </Grid>
           <Grid
-            sm={0}
-            md={1}
+
             sx={{
               display: { xs: "none", md: "flex" },
               justifyContent: "center",
@@ -550,6 +505,8 @@ function App() {
             </Grid>
             <Grid item xs={10} sx={{ pt: 1 }}>
               <TextField
+                id="main-text-input"
+                name="text"
                 label="(multiline) text"
                 size="small"
                 sx={{ color: dominantColor }}
