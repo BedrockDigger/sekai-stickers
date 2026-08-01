@@ -559,7 +559,7 @@ function App() {
           open={downloadPopupOpen}
           autoHideDuration={2000}
           onClose={handleDownloadPopupClose}
-          message="Downlading image..."
+          message="Downloading image..."
         />
       </Grid>
       <Suspense fallback={null}>
